@@ -93,7 +93,7 @@ class UniqStacksCommand(gdb.Command):
             len(uniq), len(traces)))
 
         for k, v in sorter(uniq):
-            gdb.write("Stack for thread ids {}\n".format(v))
+            gdb.write("Stack for thread ids {}\n".format(sorted(v)))
             gdb.write(str(k))
             gdb.write("\n\n")
 
