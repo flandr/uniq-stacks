@@ -40,10 +40,40 @@ Stack for thread ids [7]
 #  0 0x7ffff76ab66b pthread_join
 #  1 0x7ffff7b87837 std::thread::join()
 #  2 0x400df5 main
+```
+
+You can reduce the number of stack frames that are considered with an optional
+parameter:
+
+```
+(gdb) uniq-stacks 4
+
+== Printing 3 unique stacks from 7 threads
+
+Stack for thread ids [4, 3, 2]
+#  0 0x7f5669cd8f3d nanosleep
+#  1 0x7f5669cd8dd4 __sleep
+#  2 0x400d5c __lambda1::operator()
+#  3 0x402aa8 std::_Bind_simple<main(int, char**)::__lambda1()>::_M_invoke<>(std::_Index_tuple<>)
+#  4 0x402997 std::_Bind_simple<main(int, char**)::__lambda1()>::operator()(void)
+
+Stack for thread ids [7, 6, 5]
+#  0 0x7f5669cd8f3d nanosleep
+#  1 0x7f5669cd8dd4 __sleep
+#  2 0x400d44 __lambda0::operator()
+#  3 0x402b06 std::_Bind_simple<main(int, char**)::__lambda0()>::_M_invoke<>(std::_Index_tuple<>)
+#  4 0x4029b5 std::_Bind_simple<main(int, char**)::__lambda0()>::operator()(void)
+
+Stack for thread ids [1]
+#  0 0x7f5669fe666b pthread_join
+#  1 0x7f566a4c2837 std::thread::join()
+#  2 0x400df5 main
 
 ```
 
-## Installing and using
+There are other options; run `uniq-stacks --help` for more details.
+
+## Installing and using in GDB
 
 You have two options:
 
