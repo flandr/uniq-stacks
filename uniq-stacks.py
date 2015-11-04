@@ -58,9 +58,12 @@ class UniqStacksCommand(gdb.Command):
         gdb.Command.__init__(self, self._command, gdb.COMMAND_STACK)
 
     class NoexitArgumentParser(argparse.ArgumentParser):
-        def exit(self, *args):
-            # Don't exit out of the python interpreter on error
-            raise RuntimeError(*args)
+        def exit(self, status=0, message=None):
+            if status != 0:
+                # Non-zero exit
+                raise gdb.GdbError(message)
+            # Silent
+            raise gdb.GdbError(" ")
 
     def invoke(self, argument, from_tty):
         parser = self.NoexitArgumentParser(prog=self._command,
