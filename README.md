@@ -6,7 +6,7 @@ is especially trying when using thread pools or other code patterns in which
 many threads are waiting about on condition variable with similar calling
 histories.
 
-This project adds a `uniq-stack` command to GDB that can help find equivalence
+This project adds a `uniq-stacks` command to GDB that can help find equivalence
 classes for stack traces. It works like so:
 
 ```
