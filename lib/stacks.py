@@ -81,7 +81,7 @@ class StackTrace(object):
         i = 0
         frames = []
 
-        while frame and i <= frame_limit:
+        while frame and i < frame_limit:
             if i >= skip_frames:
                 frames.append(StackTrace.Frame(frame, i, ignore_pc))
 
