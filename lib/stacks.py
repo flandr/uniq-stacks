@@ -38,7 +38,21 @@ class StackTrace(object):
         A frame from a stack trace
         '''
 
-        def __init__(self, gdb_frame, position, ignore_pc):
+        @staticmethod
+        def maybe_get_sal(gdb_frame):
+            '''
+            Get source and line info, if available; otherwise (None, None)
+            '''
+            sal = gdb_frame.find_sal()
+            if not sal:
+                return (None, None)
+            if not sal.is_valid():
+                return (None, None)
+            if not sal.symtab:
+                return (None, None)
+            return (sal.symtab.filename, sal.line)
+
+        def __init__(self, gdb_frame, position, ignore_pc, show_source):
             self.position = position
             self.pc = gdb_frame.pc()
             self.name = gdb_frame.name()
@@ -47,6 +61,11 @@ class StackTrace(object):
             self.ignore_pc = ignore_pc
             if gdb_frame.type() == gdb.INLINE_FRAME:
                 self.name += " [inlined]"
+            if show_source:
+                (self.source_file, self.line) = self.maybe_get_sal(gdb_frame)
+            else:
+                self.source_file = None
+                self.line = None
 
         def __eq__(self, other):
             ret = self.position == other.position and \
@@ -67,12 +86,16 @@ class StackTrace(object):
         def __str__(self):
             if self.ignore_pc:
                 return "#{:3d} {}".format(self.position, self.name)
+            elif self.source_file:
+                return "#{:3d} {:#x} {}:{} {}".format(self.position, self.pc,
+                        self.source_file, self.line, self.name)
             else:
                 return "#{:3d} {:#x} {}".format(self.position, self.pc,
                         self.name)
 
     @staticmethod
-    def accumulate_backtrace(frame, skip_frames, frame_limit, ignore_pc):
+    def accumulate_backtrace(frame, skip_frames, frame_limit, ignore_pc,
+            show_source):
         '''
         Performs the backtrace over the selected thread, assembling a list
         of Frame objects
@@ -83,14 +106,15 @@ class StackTrace(object):
 
         while frame and i < frame_limit:
             if i >= skip_frames:
-                frames.append(StackTrace.Frame(frame, i, ignore_pc))
+                frames.append(StackTrace.Frame(frame, i, ignore_pc, show_source))
 
             frame = frame.older()
             i += 1
 
         return frames
 
-    def __init__(self, gdb_thread, skip_frames, frame_limit, ignore_pc):
+    def __init__(self, gdb_thread, skip_frames, frame_limit, ignore_pc,
+            show_source):
         if not gdb_thread.is_valid():
             raise RuntimeError("Invalid thread object")
 
@@ -106,7 +130,7 @@ class StackTrace(object):
 
             # Get the backtrace in its entirety
             self.frames = self.accumulate_backtrace(gdb.newest_frame(),
-                skip_frames, frame_limit, ignore_pc)
+                skip_frames, frame_limit, ignore_pc, show_source)
         finally:
             if orig_thread:
                 orig_thread.switch()

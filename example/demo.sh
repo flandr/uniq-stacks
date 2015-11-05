@@ -2,6 +2,11 @@
 
 set -o errexit
 
+options=""
+if [ $1 != "" ]; then
+    options=$1
+fi
+
 CXX=${CXX:-g++}
 CFLAGS=${CFLAGS:--g -O0}
 GDB=${GDB:-gdb}
@@ -39,4 +44,4 @@ echo "Running uniq-stacks..."
 ${GDB} two-mode --pid=${pid} \
     --batch \
     -ex "source ${basedir}/uniq-stacks.py" \
-    -ex "uniq-stacks"
+    -ex "uniq-stacks ${options}"

@@ -74,13 +74,15 @@ class UniqStacksCommand(gdb.Command):
                 default=0, help='Skip first [N] stack frames')
         parser.add_argument('--ignore-pc', action='store_true', default=False,
                 help='Ignore program counter for frame equivalence')
+        parser.add_argument('--show-source', action='store_true', default=False,
+                help='Show source file and line info, if available')
 
         args = parser.parse_args(gdb.string_to_argv(argument))
 
         traces = []
         for thread in gdb.inferiors()[0].threads():
             traces.append(stacks.StackTrace(thread, args.skip, args.limit,
-                args.ignore_pc))
+                args.ignore_pc, args.show_source))
 
         uniq = {}
         for stack in traces:
