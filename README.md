@@ -10,7 +10,7 @@ This project adds a `uniq-stacks` command to GDB that can help find equivalence
 classes for stack traces. It works like so:
 
 ```
-(gdb)
+(gdb) uniq-stacks
 
 == Printing 3 unique stacks from 7 threads
 
