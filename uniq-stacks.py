@@ -91,11 +91,11 @@ class UniqStacksCommand(gdb.Command):
         sorter = lambda d: sorted(d.items(), key=lambda item: len(item[1]),
                 reverse=True)
 
-        gdb.write("\n== Printing {} unique stacks from {} threads\n\n".format(
+        gdb.write("\n== Printing {} unique stack(s) from {} thread(s)\n\n".format(
             len(uniq), len(traces)))
 
         for k, v in sorter(uniq):
-            gdb.write("Stack for thread ids {}\n".format(sorted(v)))
+            gdb.write("Stack common for {} thread(s); Thread id(s): {}\n".format(len(v), sorted(v)))
             gdb.write(str(k))
             gdb.write("\n\n")
 
